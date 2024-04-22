@@ -29,6 +29,8 @@ async def get_or_create_room(ids: ListOfIdsReqModel, db: Session=Depends(get_db)
         for room_id in result:
             user_ids = db.execute(text(f"SELECT DISTINCT user_id FROM chat_rooms WHERE room_id = {room_id[0]}")).all()
             
+            print(f'room_id: {room_id[0]}, user_ids: {user_ids}')
+            
             do_continue: bool = True
             
             for user_id in user_ids:
