@@ -53,7 +53,7 @@ async def get_or_create_room(ids: ListOfIdsReqModel, db: Session=Depends(get_db)
         return {'data': {'room_id': result_id}} 
     else:
          for id in ids.data:
-            chat = ChatRoomsTable(room_id=result_id, user_id=id)
+            chat = ChatRoomsTable(room_id=1, user_id=id)
             
             db.add(chat)
             db.commit()
