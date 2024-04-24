@@ -2,13 +2,14 @@ from fastapi import Depends,  WebSocket, WebSocketDisconnect, APIRouter, HTTPExc
 from typing import List, Dict
 from sqlalchemy.orm import Session
 from db import get_db
+from datetime import datetime
+import status
+from sqlalchemy import text
+
 from request_models import ListOfIds as ListOfIdsReqModel
 from table_models import ChatMessages as ChatMessagesTable
 from table_models import ChatRooms as ChatRoomsTable
 from table_models import Users as Users
-from datetime import datetime
-import status
-from sqlalchemy import text
 
 
 router = APIRouter(
@@ -66,7 +67,7 @@ async def get_or_create_room(ids: ListOfIdsReqModel, db: Session=Depends(get_db)
 async def get_messages(room_id: int, db: Session=Depends(get_db)):
     messages = db.query(ChatMessagesTable).filter(ChatMessagesTable.room_id == room_id).order_by(ChatMessagesTable.created_at).all()
     
-    return {'data': [{'user_id': msg.user_id, 'message': msg.message, 'created_at': msg.created_at} for msg in messages]}
+    return {'data': [{'message_id': msg.id, 'user_id': msg.user_id, 'message': msg.message, 'created_at': msg.created_at} for msg in messages]}
 
 
 # Delete messages for the room
@@ -101,8 +102,9 @@ async def handle_connect_websocket(websocket: WebSocket, room_id: int, user_id: 
     try:
         while True:
             data = await websocket.receive_text()
-            if save_message(room_id, user_id, data, db):
-                await broadcast_message(room_id, '{"user_id":' + str(user_id) +  ', "message": "' + str(data) + '", "created_at": "' + str(datetime.now()) + '"}')
+            id: int = save_message(room_id, user_id, data, db)
+            if id:
+                await broadcast_message(room_id, '{"message_id": ' + str(id) + ', "user_id": ' + str(user_id) +  ', "message": "' + str(data) + '", "created_at": "' + str(datetime.now()) + '"}')
     except WebSocketDisconnect:
         rooms[room_id].remove(websocket)
 
@@ -118,7 +120,7 @@ def save_message(room_id: str, user_id: int, message: str, db: Session=Depends(g
     user = db.query(Users).filter(Users.id == user_id).first()
     
     if user is None:
-        return False
+        return 0
     
     data = ChatMessagesTable(room_id=room_id, user_id=user_id, message=message, created_at=datetime.now())
     
@@ -126,6 +128,8 @@ def save_message(room_id: str, user_id: int, message: str, db: Session=Depends(g
         db.add(data)
         db.commit()
         
-        return True
+        db.refresh(data)
+        
+        return data.id
     except:
-        return False
+        return 0
