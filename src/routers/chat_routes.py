@@ -119,6 +119,8 @@ async def handle_message_delete(message_id: int, db: Session=Depends(get_db)):
         
     db.delete(message)
     db.commit()
+    
+    await broadcast_message(message.room_id, message=f'__message_deleted__{message.id}')
 
 
 # Dictionary to store connected clients and their corresponding rooms
