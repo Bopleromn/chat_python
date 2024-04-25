@@ -67,7 +67,7 @@ async def get_or_create_room(ids: ListOfIdsReqModel, db: Session=Depends(get_db)
 async def get_messages(room_id: int, db: Session=Depends(get_db)):
     messages = db.query(ChatMessagesTable).filter(ChatMessagesTable.room_id == room_id).order_by(ChatMessagesTable.created_at).all()
     
-    return {'data': [{'message_id': msg.id, 'user_id': msg.user_id, 'message': msg.message, 'created_at': msg.created_at} for msg in messages]}
+    return {'data': [{'id': msg.id, 'user_id': msg.user_id, 'message': msg.message, 'created_at': msg.created_at} for msg in messages]}
 
 
 # Delete messages for the room
@@ -104,7 +104,7 @@ async def handle_connect_websocket(websocket: WebSocket, room_id: int, user_id: 
             data = await websocket.receive_text()
             id: int = save_message(room_id, user_id, data, db)
             if id:
-                await broadcast_message(room_id, '{"message_id": ' + str(id) + ', "user_id": ' + str(user_id) +  ', "message": "' + str(data) + '", "created_at": "' + str(datetime.now()) + '"}')
+                await broadcast_message(room_id, '{"id": ' + str(id) + ', "user_id": ' + str(user_id) +  ', "message": "' + str(data) + '", "created_at": "' + str(datetime.now()) + '"}')
     except WebSocketDisconnect:
         rooms[room_id].remove(websocket)
 
