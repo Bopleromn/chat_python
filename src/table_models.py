@@ -11,6 +11,7 @@ class Users(Base):
     password: str = Column(String, nullable=False)
     name: str = Column(String, nullable=False)
     age: int = Column(Integer, nullable=False)
+    photo: str = Column(Integer, nullable=False)
     
 
 class VerificationCodes(Base):

@@ -30,7 +30,7 @@ async def handle_user_get(email: str, password: str, db: Session=Depends(get_db)
 async def handle_all_users_get(db: Session=Depends(get_db)):
     users = db.query(UsersTable).all()
     
-    return {'data': [{'id': user.id, 'email': user.email, 'name': user.name, 'age': user.age} for user in users]}
+    return {'data': [{'id': user.id, 'email': user.email, 'name': user.name, 'age': user.age, 'photo': user.photo} for user in users]}
     
     
 @router.post('')
@@ -45,6 +45,7 @@ async def handle_user_post(user: UserReqModel, db: Session=Depends(get_db)):
         
         return {'data': new_user}
     except Exception as e:
+        print(e)
         raise HTTPException(
             status_code=409,
             detail='user with that email already exists'
@@ -61,7 +62,7 @@ async def hande_user_put(email: str, password: str, new_user: UserReqModel, db: 
          raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, 
                             detail='user not found')
     
-    query.update(new_user.model_dump(), synchronize_session=False)
+    query.update(values=new_user.model_dump(), synchronize_session=False)
     
     try:
         db.commit()

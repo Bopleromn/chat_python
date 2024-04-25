@@ -19,7 +19,7 @@ router = APIRouter(
 
 
 @router.post('/')
-async def get_or_create_room(ids: ListOfIdsReqModel, db: Session=Depends(get_db)):
+async def handle_get_or_create_room(ids: ListOfIdsReqModel, db: Session=Depends(get_db)):
     if len(ids.data) == 1:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail='room must contain at least 2 users')
@@ -64,7 +64,7 @@ async def get_or_create_room(ids: ListOfIdsReqModel, db: Session=Depends(get_db)
     
 # Get messages for the room
 @router.get("/{room_id}")
-async def get_messages(room_id: int, db: Session=Depends(get_db)):
+async def handle_messages_get(room_id: int, db: Session=Depends(get_db)):
     messages = db.query(ChatMessagesTable).filter(ChatMessagesTable.room_id == room_id).order_by(ChatMessagesTable.created_at).all()
     
     return {'data': [{'id': msg.id, 'user_id': msg.user_id, 'message': msg.message, 'created_at': msg.created_at} for msg in messages]}
@@ -72,7 +72,7 @@ async def get_messages(room_id: int, db: Session=Depends(get_db)):
 
 # Delete messages for the room
 @router.delete("/{room_id}")
-async def delete_messages(room_id: int, db: Session=Depends(get_db)):
+async def handle_messages_delete(room_id: int, db: Session=Depends(get_db)):
     try:
         db.query(ChatMessagesTable).where(ChatMessagesTable.room_id == room_id).delete()
         db.commit()
@@ -83,6 +83,28 @@ async def delete_messages(room_id: int, db: Session=Depends(get_db)):
                 status_code=404,
                 detail='could not delete messages from the room'
             )
+        
+        
+@router.put("/{message_id}")
+async def handle_message_put(message_id: int, message: str, db: Session=Depends(get_db)):
+    query = db.query(ChatMessagesTable).filter(ChatMessagesTable.id == message_id)
+    
+    if query.first() is None:
+        raise HTTPException(
+            status_code=404,
+            detail='message not found'
+        )
+        
+    query.update(values={'message': message}, synchronize_session=False)
+    
+    try:
+        db.commit()
+        db.refresh(query.first())
+        
+        return {'data': query.first()}
+    except:
+        raise HTTPException(status_code=status.HTTP_304_NOT_MODIFIED, 
+                            detail='could not update user')
 
 
 # Dictionary to store connected clients and their corresponding rooms

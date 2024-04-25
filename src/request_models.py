@@ -7,6 +7,7 @@ class UserBase(BaseModel):
     password: str 
     name: str
     age: int 
+    photo: str = ''
 
 
 class User(UserBase):
