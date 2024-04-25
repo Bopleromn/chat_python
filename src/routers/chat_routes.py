@@ -105,6 +105,20 @@ async def handle_message_put(message_id: int, message: str, db: Session=Depends(
     except:
         raise HTTPException(status_code=status.HTTP_304_NOT_MODIFIED, 
                             detail='could not update user')
+        
+
+@router.delete("/{message_id}")
+async def handle_message_delete(message_id: int, db: Session=Depends(get_db)):
+    message = db.query(ChatMessagesTable).filter(ChatMessagesTable.id == message_id).first()
+    
+    if message is None:
+        raise HTTPException(
+            status_code=404,
+            detail='message not found'
+        )
+        
+    db.delete(message)
+    db.commit()
 
 
 # Dictionary to store connected clients and their corresponding rooms
