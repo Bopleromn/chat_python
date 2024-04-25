@@ -5,7 +5,7 @@ from fastapi.responses import FileResponse, JSONResponse, RedirectResponse
 
 
 router = APIRouter(
-    prefix='/image',
+    prefix='/images',
     tags=['Images']
 )
 
@@ -13,7 +13,7 @@ router = APIRouter(
 @router.post('/{image_name}')
 async def add_image(image_name: str, file: UploadFile = File(...)):
     try:
-        image_name = f'../../images/{image_name}'
+        image_name = f'../images/{image_name}'
         with open(image_name, 'wb') as buffer:
             shutil.copyfileobj(file.file, buffer)
 

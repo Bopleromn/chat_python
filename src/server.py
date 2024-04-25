@@ -1,3 +1,4 @@
+from fastapi.responses import RedirectResponse
 import uvicorn
 from fastapi import FastAPI
 
@@ -15,6 +16,10 @@ class Server:
         self.app.include_router(users_router)
         self.app.include_router(chats_router)
         self.app.include_router(images_router)
+        
+        @self.app.get("/", include_in_schema=False)
+        async def redirect_to_docs():
+            return RedirectResponse("/docs")
         
     def run(self):
         uvicorn.run(
