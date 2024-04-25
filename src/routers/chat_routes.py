@@ -99,9 +99,10 @@ async def handle_message_put(message_id: int, message: str, db: Session=Depends(
     
     try:
         db.commit()
-        db.refresh(query.first())
         
-        return {'data': query.first()}
+        updated_message = query.first()
+        
+        await broadcast_message(room_id=updated_message.room_id, message=f'__message_updated__{updated_message.id}')
     except:
         raise HTTPException(status_code=status.HTTP_304_NOT_MODIFIED, 
                             detail='could not update user')
@@ -115,12 +116,12 @@ async def handle_message_delete(message_id: int, db: Session=Depends(get_db)):
         raise HTTPException(
             status_code=404,
             detail='message not found'
-        )
+        )   
         
     db.delete(message)
     db.commit()
     
-    await broadcast_message(message.room_id, message=f'__message_deleted__{message.id}')
+    await broadcast_message(room_id=message.room_id, message=f'__message_deleted__{message.id}')
 
 
 # Dictionary to store connected clients and their corresponding rooms
