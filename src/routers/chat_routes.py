@@ -102,7 +102,7 @@ async def handle_message_put(message_id: int, message: str, db: Session=Depends(
         
         updated_message = query.first()
         
-        await broadcast_message(room_id=updated_message.room_id, message=f'__message_updated__{updated_message.id}')
+        await broadcast_message(room_id=updated_message.room_id, message=f'__message_updated__{updated_message.id}_{updated_message.message}')
     except:
         raise HTTPException(status_code=status.HTTP_304_NOT_MODIFIED, 
                             detail='could not update user')
