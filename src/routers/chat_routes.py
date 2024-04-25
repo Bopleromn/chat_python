@@ -18,7 +18,7 @@ router = APIRouter(
 )
 
 
-@router.post('/')
+@router.post('/rooms')
 async def handle_get_or_create_room(ids: ListOfIdsReqModel, db: Session=Depends(get_db)):
     if len(ids.data) == 1:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
@@ -63,7 +63,7 @@ async def handle_get_or_create_room(ids: ListOfIdsReqModel, db: Session=Depends(
     
     
 # Get messages for the room
-@router.get("/{room_id}")
+@router.get("/rooms/{room_id}")
 async def handle_messages_get(room_id: int, db: Session=Depends(get_db)):
     messages = db.query(ChatMessagesTable).filter(ChatMessagesTable.room_id == room_id).order_by(ChatMessagesTable.created_at).all()
     
@@ -71,7 +71,7 @@ async def handle_messages_get(room_id: int, db: Session=Depends(get_db)):
 
 
 # Delete messages for the room
-@router.delete("/{room_id}")
+@router.delete("/rooms/{room_id}")
 async def handle_messages_delete(room_id: int, db: Session=Depends(get_db)):
     try:
         db.query(ChatMessagesTable).where(ChatMessagesTable.room_id == room_id).delete()
@@ -85,7 +85,7 @@ async def handle_messages_delete(room_id: int, db: Session=Depends(get_db)):
             )
         
         
-@router.put("/{message_id}")
+@router.put("/messages/{message_id}")
 async def handle_message_put(message_id: int, message: str, db: Session=Depends(get_db)):
     query = db.query(ChatMessagesTable).filter(ChatMessagesTable.id == message_id)
     
@@ -107,7 +107,7 @@ async def handle_message_put(message_id: int, message: str, db: Session=Depends(
                             detail='could not update user')
         
 
-@router.delete("/{message_id}")
+@router.delete("/messages/{message_id}")
 async def handle_message_delete(message_id: int, db: Session=Depends(get_db)):
     message = db.query(ChatMessagesTable).filter(ChatMessagesTable.id == message_id).first()
     
