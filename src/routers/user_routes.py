@@ -52,7 +52,7 @@ async def handle_user_post(user: UserReqModel, db: Session=Depends(get_db)):
     except Exception as e:
         raise HTTPException(
             status_code=409,
-            detail='user with that email already exists'
+            detail=e
         )
     
     
