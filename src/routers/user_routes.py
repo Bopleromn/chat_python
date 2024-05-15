@@ -1,12 +1,14 @@
 from random import randint
 from fastapi import Depends, APIRouter, HTTPException
 from sqlalchemy.orm import Session
-from db import get_db
-from helpers import send_email
-from request_models import UserBase as UserReqModel
-from table_models import Users as UsersTable
-from table_models import VerificationCodes as VerificationCodesTable
+from ..db import get_db
+from ..helpers import send_email
+from ..request_models import UserBase as UserReqModel
+from ..table_models import Users as UsersTable
+from ..table_models import VerificationCodes as VerificationCodesTable
+from ..routers import chat_routes
 import status
+from datetime import datetime
 
 
 router = APIRouter(
@@ -22,6 +24,9 @@ async def handle_user_get(email: str, password: str, db: Session=Depends(get_db)
     if user is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, 
                             detail='user not found')
+        
+    await hanlde_post_last_seen(user_id=user.id, is_active=True, db=db)
+    db.refresh(user)
          
     return {'data': user}
 
@@ -30,7 +35,7 @@ async def handle_user_get(email: str, password: str, db: Session=Depends(get_db)
 async def handle_all_users_get(db: Session=Depends(get_db)):
     users = db.query(UsersTable).all()
     
-    return {'data': [{'id': user.id, 'email': user.email, 'name': user.name, 'age': user.age, 'photo': user.photo} for user in users]}
+    return {'data': [{'id': user.id, 'email': user.email, 'name': user.name, 'age': user.age, 'photo': user.photo, 'last_seen': user.last_seen} for user in users]}
     
     
 @router.post('')
@@ -45,7 +50,6 @@ async def handle_user_post(user: UserReqModel, db: Session=Depends(get_db)):
         
         return {'data': new_user}
     except Exception as e:
-        print(e)
         raise HTTPException(
             status_code=409,
             detail='user with that email already exists'
@@ -171,3 +175,38 @@ async def handle_reset_password(email: str, new_password: str, verification_code
         
     user.password = new_password
     db.commit()
+    
+    
+@router.post('/activity')
+async def hanlde_post_last_seen(user_id: int, is_active: bool, db: Session = Depends(get_db)):
+    try:
+        user = db.query(UsersTable).filter(UsersTable.id == user_id).first()
+        
+        if is_active:
+            user.last_seen = 'active'
+        else:
+           user.last_seen = str(datetime.now())
+           
+        db.commit()
+        
+        rooms = await chat_routes.handle_rooms_get(user_id=user.id, db=db)
+        
+        for room in rooms['data']:
+            await chat_routes.broadcast_message(room_id=room['room_id'], message='__user_status_updated__')
+    except:
+        raise HTTPException(
+            status_code=404,
+            detail='user not found'
+        )
+        
+    
+@router.get('/activity')
+async def hanlde_get_last_seen(user_id: int, db: Session = Depends(get_db)):
+    try:
+        return {'data': db.query(UsersTable).filter(UsersTable.id == user_id).first().last_seen}
+    except:
+        raise HTTPException(
+            status_code=404,
+            detail='user not found'
+        )
+        

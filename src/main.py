@@ -1,9 +1,9 @@
-from server import Server
+from .server import Server
 
 
 if __name__ == '__main__':
     # set config 
-    server = Server('0.0.0.0', 8080)
+    server = Server('127.0.0.1', 80)
 
     server.init_routes()
 

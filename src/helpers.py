@@ -1,7 +1,7 @@
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-import config
+from . import config
 
 
 async def send_email(send_to: str, header: str, body: str):  

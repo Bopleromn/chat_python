@@ -1,4 +1,4 @@
-from db import Base, engine
+from .db import Base, engine
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
 from sqlalchemy.orm import relationship
 
@@ -12,6 +12,7 @@ class Users(Base):
     name: str = Column(String, nullable=False)
     age: int = Column(Integer, nullable=False)
     photo: str = Column(Integer, nullable=False)
+    last_seen: str = Column(String, nullable=False)
     
 
 class VerificationCodes(Base):
@@ -40,6 +41,7 @@ class ChatRooms(Base):
     id: int = Column(Integer, primary_key=True, autoincrement=True)
     room_id: int = Column(Integer, nullable=False)
     user_id: int = Column(Integer, ForeignKey('users.id'), nullable=False)
+    last_message: str = Column(String, nullable=True)
     
     user = relationship('Users', backref='chat_rooms')
 

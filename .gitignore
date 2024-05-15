@@ -1,4 +1,6 @@
-venv/
+.venv/
+__pycache__
+.idea
 src/__pycache__/
+src/.venv
 src/routers/__pycache__/
-.venv

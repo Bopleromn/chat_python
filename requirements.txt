@@ -3,5 +3,6 @@ uvicorn~=0.29.0
 sqlalchemy~=2.0.29
 psycopg2
 python-status
+websockets
 
 pydantic~=2.6.4
