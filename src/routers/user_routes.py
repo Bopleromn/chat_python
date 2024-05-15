@@ -41,6 +41,7 @@ async def handle_all_users_get(db: Session=Depends(get_db)):
 @router.post('')
 async def handle_user_post(user: UserReqModel, db: Session=Depends(get_db)):
     new_user = UsersTable(**user.model_dump())
+    new_user.last_seen = ''
     
     db.add(new_user)
     
