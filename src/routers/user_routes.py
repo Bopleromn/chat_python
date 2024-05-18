@@ -34,7 +34,7 @@ async def handle_user_get(email: str, password: str, db: Session=Depends(get_db)
 @router.get('/all')
 async def handle_all_users_get(db: Session=Depends(get_db)):
     users = db.query(UsersTable).all()
-    
+
     return {'data': [{'id': user.id, 'email': user.email, 'name': user.name, 'age': user.age, 'photo': user.photo, 'last_seen': user.last_seen} for user in users]}
     
     
@@ -42,6 +42,7 @@ async def handle_all_users_get(db: Session=Depends(get_db)):
 async def handle_user_post(user: UserReqModel, db: Session=Depends(get_db)):
     new_user = UsersTable(**user.model_dump())
     new_user.last_seen = ''
+    new_user.name = '@' + new_user.name
     
     db.add(new_user)
     
