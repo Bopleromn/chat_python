@@ -6,3 +6,4 @@ python-status
 websockets
 pydantic~=2.6.4
 status
+python-multipart
