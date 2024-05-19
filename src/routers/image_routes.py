@@ -13,7 +13,6 @@ router = APIRouter(
 @router.post('')
 async def add_image(name: str, file: UploadFile = File(...)):
     try:
-        name += '.png'
         name = f'images/{name}'
         with open(name, 'wb') as buffer:
             shutil.copyfileobj(file.file, buffer)
@@ -25,6 +24,7 @@ async def add_image(name: str, file: UploadFile = File(...)):
             )
         )   
     except Exception as e:
+        print(e)
         raise HTTPException(
             status_code=404,
             detail=f'can\'t save image, error {e}'
@@ -33,8 +33,6 @@ async def add_image(name: str, file: UploadFile = File(...)):
 
 @router.get('', response_class=FileResponse)
 async def get_image(name: str):
-    name += '.png'
-    
     if (os.path.exists('images/' + name)):
         return 'images/' + name
     

@@ -191,6 +191,8 @@ async def hanlde_post_last_seen(user_id: int, is_active: bool, db: Session = Dep
            
         db.commit()
         
+        print(db.query(UsersTable).filter(UsersTable.id == user_id).first().last_seen)
+        
         rooms = await chat_routes.handle_rooms_get(user_id=user.id, db=db)
         
         for room in rooms['data']:
