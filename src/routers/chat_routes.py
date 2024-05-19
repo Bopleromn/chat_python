@@ -72,7 +72,7 @@ async def handle_messages_get(room_id: int, db: Session=Depends(get_db)):
 async def handle_rooms_get(user_id: int, db: Session = Depends(get_db)):
     rooms = db.query(ChatRoomsTable).filter(ChatRoomsTable.user_id == user_id).all()
     
-    return {'data': [{'room_id': room.id, 'last_message': room.last_message, 'user_ids': [other_room.user_id
+    return {'data': [{'room_id': room.room_id, 'last_message': room.last_message, 'user_ids': [other_room.user_id
                                                                                           for other_room in db.query(ChatRoomsTable).filter(
                                                                                                 and_(
                                                                                                      ChatRoomsTable.room_id == room.room_id,

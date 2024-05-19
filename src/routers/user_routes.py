@@ -194,7 +194,7 @@ async def hanlde_post_last_seen(user_id: int, is_active: bool, db: Session = Dep
         rooms = await chat_routes.handle_rooms_get(user_id=user.id, db=db)
         
         for room in rooms['data']:
-            await chat_routes.broadcast_message(room_id=room['room_id'], message='__user_status_updated__')
+            await chat_routes.broadcast_message(room_id=room['room_id'], message=f'__user_status_updated_{user_id}__')
     except:
         raise HTTPException(
             status_code=404,
