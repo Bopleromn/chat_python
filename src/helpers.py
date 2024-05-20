@@ -1,10 +1,10 @@
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from . import config
+import config
 
 
-async def send_email(send_to: str, header: str, body: str):  
+async def send_email(send_to: str, header: str, body: str):
 
     msg = MIMEMultipart()
     msg['From'] = config.SEND_FROM_EMAIL
