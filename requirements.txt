@@ -1,9 +1,4 @@
-FastApi~=0.110.0
-uvicorn~=0.29.0
+fastapi[all]
 sqlalchemy
-psycopg2
-python-status
-websockets
-pydantic~=2.6.4
-status
+psycopg2-binary
 python-multipart
