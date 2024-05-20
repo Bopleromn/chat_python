@@ -1,5 +1,5 @@
 from random import randint
-from fastapi import Depends, APIRouter, HTTPException
+from fastapi import Depends, APIRouter, HTTPException, status
 from sqlalchemy.orm import Session
 from db import get_db
 from helpers import send_email
@@ -7,7 +7,6 @@ from request_models import UserBase as UserReqModel
 from table_models import Users as UsersTable
 from table_models import VerificationCodes as VerificationCodesTable
 from routers import chat_routes
-import status
 from datetime import datetime
 
 

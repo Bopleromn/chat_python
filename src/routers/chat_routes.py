@@ -1,8 +1,7 @@
-from fastapi import Depends,  WebSocket, WebSocketDisconnect, APIRouter, HTTPException
+from fastapi import Depends,  WebSocket, WebSocketDisconnect, APIRouter, HTTPException, status
 from typing import List, Dict
 from sqlalchemy.orm import Session
 from datetime import datetime
-import status
 from sqlalchemy import text, and_, desc
 
 from request_models import ListOfIds as ListOfIdsReqModel
