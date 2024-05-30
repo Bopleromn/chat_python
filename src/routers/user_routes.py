@@ -112,7 +112,8 @@ async def handle_verification_code_send(email: str, is_registration: bool, db: S
 
     try:
         await send_email(email, f"Здравствуйте, {email}. Ваш код подтверждения пришел", f"Код: {current_code}")
-    except:
+    except Exception as e:
+        print(e)
         raise HTTPException(
             status_code=400,
             detail='invalid email address'
