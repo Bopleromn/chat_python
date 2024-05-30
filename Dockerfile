@@ -3,6 +3,7 @@ FROM python
 WORKDIR /app
 
 COPY requirements.txt .
+COPY DataBase.db .
 
 RUN pip install -r requirements.txt
 
