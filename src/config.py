@@ -3,4 +3,4 @@ PASSWORD_EMAIL: str = "ewxm wbxy uzqc zipz"
 
 DB_PASSWORD: str = "SOON..."
 DB_NAME: str = "SOON..."
-DB_URL: str = "sqlite:///src/DataBase.db"
+DB_URL: str = "sqlite:///DataBase.db"
