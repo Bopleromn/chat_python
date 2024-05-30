@@ -13,7 +13,7 @@ router = APIRouter(
 @router.post('')
 async def add_image(name: str, file: UploadFile = File(...)):
     try:
-        name = f'images/{name}'
+        name = f'../images/{name}'
         with open(name, 'wb') as buffer:
             shutil.copyfileobj(file.file, buffer)
 
@@ -33,8 +33,8 @@ async def add_image(name: str, file: UploadFile = File(...)):
 
 @router.get('', response_class=FileResponse)
 async def get_image(name: str):
-    if (os.path.exists('images/' + name)):
-        return 'images/' + name
+    if (os.path.exists('../images/' + name)):
+        return '../images/' + name
 
     raise HTTPException(
         status_code=404,

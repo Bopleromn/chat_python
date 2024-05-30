@@ -42,7 +42,7 @@ async def handle_all_users_get(db: Session = Depends(get_db)):
 async def handle_user_post(user: UserReqModel, db: Session = Depends(get_db)):
     new_user = UsersTable(**user.model_dump())
     new_user.last_seen = ''
-    new_user.name = '@' + new_user.name
+    #new_user.name = '@' + new_user.name
 
     db.add(new_user)
 
@@ -62,7 +62,6 @@ async def handle_user_post(user: UserReqModel, db: Session = Depends(get_db)):
 async def hande_user_put(email: str, password: str, new_user: UserReqModel, db: Session = Depends(get_db)):
     query = db.query(UsersTable).filter(UsersTable.email ==
                                         email).filter(UsersTable.password == password)
-
     old_user = query.first()
 
     if old_user is None:
